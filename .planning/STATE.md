@@ -31,7 +31,7 @@
 
 **当前 Plan 进度**:
 - ✅ 02-01: Web 端 WebRTC 音视频采集插件 (Wave 1)
-- ⏳ 02-02: 移动端 React Native 采集插件 (Wave 1)
+- ✅ 02-02: 移动端 React Native 采集插件 (Wave 1)
 - ⏳ 02-03: 设备管理与质量配置 (Wave 2)
 
 ---
@@ -42,16 +42,16 @@
 
 | 状态 | 数量 | 百分比 |
 |------|------|--------|
-| ✅ Completed | 1 | 4% |
-| 🚧 In Progress | 2 | 8% |
+| ✅ Completed | 2 | 8% |
+| 🚧 In Progress | 1 | 4% |
 | ⏳ Pending | 21 | 88% |
 | ❌ Blocked | 0 | 0% |
 
 **已完成需求**:
+- CAPTURE-01: 移动端采集插件 ✅
 - CAPTURE-02: Web 采集插件 ✅
 
 **进行中需求**:
-- CAPTURE-01: 移动端采集插件
 - CAPTURE-03: 设备管理与质量配置
 
 ---
@@ -70,11 +70,14 @@
 
 ## 下一步行动
 
-**当前工作**: 阶段 2 - 采集插件域，Plan 02-02 移动端采集插件
+**当前工作**: 阶段 2 - 采集插件域，Wave 1 完成，准备执行 Wave 2
+
+**Wave 1 完成情况**:
+- ✅ 02-01: Web 端 WebRTC 音视频采集插件
+- ✅ 02-02: 移动端 React Native 采集插件
 
 **即将执行**:
-1. Plan 02-02: 移动端 React Native 采集插件（Wave 1）
-2. Plan 02-03: 设备管理与质量配置（Wave 2，依赖 Wave 1）
+- Plan 02-03: 设备管理与质量配置（Wave 2）
 
 **命令**:
 - `/gsd:execute-phase 2` - 继续执行阶段 2 剩余计划
@@ -91,4 +94,4 @@
 
 ---
 
-*Last updated: 2026 年 3 月 24 日 - Phase 2 Plan 02-01 完成*
+*Last updated: 2026 年 3 月 24 日 - Phase 2 Wave 1 完成 (02-01, 02-02)*
