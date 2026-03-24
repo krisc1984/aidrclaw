@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aidrclaw.core.mapper.FlowStateHistoryMapper">
+
+    <resultMap id="FlowStateHistoryResult" type="com.aidrclaw.core.entity.FlowStateHistory">
+        <id column="id" property="id"/>
+        <result column="session_id" property="sessionId"/>
+        <result column="from_state" property="fromState"/>
+        <result column="to_state" property="toState"/>
+        <result column="event" property="event"/>
+        <result column="transition_time" property="transitionTime"/>
+        <result column="created_at" property="createdAt"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.aidrclaw.core.entity.FlowStateHistory">
+        INSERT INTO flow_state_history (session_id, from_state, to_state, event, transition_time, created_at)
+        VALUES (#{sessionId}, #{fromState}, #{toState}, #{event}, #{transitionTime}, #{createdAt})
+    </insert>
+
+    <select id="selectBySessionId" resultMap="FlowStateHistoryResult">
+        SELECT * FROM flow_state_history WHERE session_id = #{sessionId} ORDER BY transition_time ASC
+    </select>
+
+</mapper>

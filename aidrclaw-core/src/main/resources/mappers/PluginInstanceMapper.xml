@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aidrclaw.core.mapper.PluginInstanceMapper">
+
+    <resultMap id="PluginInstanceResult" type="com.aidrclaw.core.entity.PluginInstance">
+        <id column="id" property="id"/>
+        <result column="plugin_id" property="pluginId"/>
+        <result column="plugin_name" property="pluginName"/>
+        <result column="version" property="version"/>
+        <result column="status" property="status"/>
+        <result column="loaded_at" property="loadedAt"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.aidrclaw.core.entity.PluginInstance">
+        INSERT INTO plugin_instance (plugin_id, plugin_name, version, status, loaded_at, created_at, updated_at)
+        VALUES (#{pluginId}, #{pluginName}, #{version}, #{status}, #{loadedAt}, #{createdAt}, #{updatedAt})
+    </insert>
+
+    <update id="update" parameterType="com.aidrclaw.core.entity.PluginInstance">
+        UPDATE plugin_instance
+        SET status = #{status},
+            updated_at = #{updatedAt}
+        WHERE plugin_id = #{pluginId}
+    </update>
+
+    <select id="selectByPluginId" resultMap="PluginInstanceResult">
+        SELECT * FROM plugin_instance WHERE plugin_id = #{pluginId}
+    </select>
+
+    <select id="selectAll" resultMap="PluginInstanceResult">
+        SELECT * FROM plugin_instance ORDER BY plugin_name ASC
+    </select>
+
+</mapper>

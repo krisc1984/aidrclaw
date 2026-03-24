@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aidrclaw.core.mapper.FlowSessionMapper">
+
+    <resultMap id="FlowSessionResult" type="com.aidrclaw.core.entity.FlowSession">
+        <id column="id" property="id"/>
+        <result column="session_id" property="sessionId"/>
+        <result column="state" property="state"/>
+        <result column="start_time" property="startTime"/>
+        <result column="end_time" property="endTime"/>
+        <result column="result" property="result"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.aidrclaw.core.entity.FlowSession">
+        INSERT INTO flow_session (session_id, state, start_time, end_time, result, created_at, updated_at)
+        VALUES (#{sessionId}, #{state}, #{startTime}, #{endTime}, #{result}, #{createdAt}, #{updatedAt})
+    </insert>
+
+    <update id="update" parameterType="com.aidrclaw.core.entity.FlowSession">
+        UPDATE flow_session
+        SET state = #{state},
+            end_time = #{endTime},
+            result = #{result},
+            updated_at = #{updatedAt}
+        WHERE session_id = #{sessionId}
+    </update>
+
+    <select id="selectBySessionId" resultMap="FlowSessionResult">
+        SELECT * FROM flow_session WHERE session_id = #{sessionId}
+    </select>
+
+    <select id="selectAll" resultMap="FlowSessionResult">
+        SELECT * FROM flow_session ORDER BY created_at DESC
+    </select>
+
+    <delete id="delete">
+        DELETE FROM flow_session WHERE session_id = #{sessionId}
+    </delete>
+
+</mapper>
