@@ -27,3 +27,10 @@ logging:
   level:
     com.aidrclaw: DEBUG
     org.springframework: INFO
+
+minio:
+  endpoint: http://localhost:9000
+  access-key: minioadmin
+  secret-key: minioadmin
+  bucket: dual-recording
+  region: us-east-1
