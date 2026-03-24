@@ -19,27 +19,27 @@ class PluginLoaderTest {
     private PluginLoader pluginLoader;
 
     @Test
-    void loadAllPlugins_shouldLoadLocalStoragePlugin() {
+    void loadAllPlugins_shouldLoadMockPlugin() {
         pluginLoader.loadAllPlugins();
         
         assertTrue(pluginLoader.getLoadedPluginCount() > 0, "应该至少加载一个插件");
-        assertTrue(pluginLoader.isPluginLoaded("local-storage"), "应该加载本地存储插件");
+        assertTrue(pluginLoader.isPluginLoaded("mock-plugin"), "应该加载 Mock 插件");
     }
 
     @Test
     void getPlugin_shouldReturnPlugin() {
         pluginLoader.loadAllPlugins();
         
-        Plugin plugin = pluginLoader.getPlugin("local-storage");
+        Plugin plugin = pluginLoader.getPlugin("mock-plugin");
         assertNotNull(plugin);
-        assertEquals("local-storage", plugin.getMetadata().getPluginId());
+        assertEquals("mock-plugin", plugin.getMetadata().getPluginId());
     }
 
     @Test
-    void listPluginIds_shouldContainLocalStorage() {
+    void listPluginIds_shouldContainMockPlugin() {
         pluginLoader.loadAllPlugins();
         
         List<String> pluginIds = pluginLoader.listPluginIds();
-        assertTrue(pluginIds.contains("local-storage"));
+        assertTrue(pluginIds.contains("mock-plugin"));
     }
 }
