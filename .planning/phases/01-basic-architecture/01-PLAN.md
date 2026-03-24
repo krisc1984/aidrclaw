@@ -17,28 +17,31 @@
 
 ### 任务 1: 创建 Maven 多模块项目结构
 
-**目标**: 建立父 POM 和子模块结构
+**目标**: 建立父 POM 和子模块结构，基于 Spring Boot 3.x
 
 **子任务**:
 1.1 创建父 POM (`aidrclaw-parent`)
    - 定义 Java 17、Maven 插件版本
-   - 管理依赖版本 (Spring Boot 3.x, MyBatis 3.x, PostgreSQL 驱动，HikariCP)
+   - **使用 Spring Boot 3.x 作为父依赖** (`spring-boot-starter-parent`)
+   - 管理依赖版本 (MyBatis 3.x, PostgreSQL 驱动，HikariCP)
    - 配置 Maven 插件 (compiler, surefire, jar)
 
 1.2 创建子模块
    - `aidrclaw-plugin-api`: 插件 API 接口定义
-   - `aidrclaw-core`: 核心引擎实现
+   - `aidrclaw-core`: 核心引擎实现 (**使用 Spring Boot Starter**)
    - `aidrclaw-plugins-storage`: 存储插件实现
    - `aidrclaw-plugins-flow`: 流程插件实现
 
 **交付物**: 
-- 父 POM 文件 (`pom.xml`)
+- 父 POM 文件 (`pom.xml`) — **继承自 spring-boot-starter-parent**
 - 4 个子模块目录结构和 `pom.xml`
 - `.gitignore` 文件
+- Spring Boot 主应用类 (`AidrclawApplication.java`)
 
 **验收标准**:
 - [ ] `mvn clean install` 成功执行
 - [ ] 所有子模块正确继承父 POM
+- [ ] Spring Boot 应用可启动 (`mvn spring-boot:run`)
 - [ ] 依赖版本统一管理
 
 ---
@@ -93,39 +96,44 @@
 
 ### 任务 3: 实现核心引擎
 
-**目标**: 实现插件加载器、生命周期管理和事件总线
+**目标**: 实现插件加载器、生命周期管理和事件总线，基于 Spring Boot
 
 **子任务**:
 3.1 实现 `PluginLoader` 类
    - 使用 `ServiceLoader` 发现插件
    - 管理插件实例生命周期
    - 提供 `loadPlugin()`, `unloadPlugin()` 方法
+   - **使用 Spring Bean 管理插件实例**
 
 3.2 实现 `PluginManager` 类
    - 维护已加载插件注册表
    - 提供插件查询方法 (`getPlugin()`, `listPlugins()`)
    - 处理插件依赖关系
+   - **标记为 `@Service` 由 Spring 管理**
 
 3.3 实现事件总线
-   - 使用 Guava EventBus 或 Spring Event
-   - 定义 `EventBus` 单例
-   - 提供 `publish()`, `subscribe()` 方法
+   - **使用 Spring ApplicationEventPublisher**
+   - 定义领域事件类 (继承 `ApplicationEvent`)
+   - 使用 `@EventListener` 监听事件
+   - 提供同步/异步事件处理
 
 3.4 实现插件配置管理
    - 读取 YAML 配置文件
-   - 使用 `@Config` 注解注入配置
-   - 支持配置热刷新
+   - **使用 `@ConfigurationProperties` 注入配置**
+   - **使用 `@RefreshScope` 支持配置热刷新 (可选)**
 
 **交付物**:
 - `aidrclaw-core/src/main/java/com/aidrclaw/core/plugin/` 目录
-- `PluginLoader.java`, `PluginManager.java`, `EventBusWrapper.java`
-- 配置加载器实现
+- `PluginLoader.java`, `PluginManager.java`
+- **Spring 配置类 `PluginAutoConfiguration.java`**
+- 事件定义类
 
 **验收标准**:
 - [ ] 可发现并加载测试插件
 - [ ] 插件生命周期方法正确调用
-- [ ] 事件发布/订阅正常工作
-- [ ] 配置正确注入到插件
+- [ ] Spring 事件发布/订阅正常工作
+- [ ] 配置通过 `@ConfigurationProperties` 正确注入
+- [ ] Spring Boot 应用上下文正确加载
 
 ---
 
@@ -185,7 +193,7 @@
 
 ### 任务 5: 数据库设计与实现
 
-**目标**: 创建数据库表结构和 MyBatis 映射
+**目标**: 创建数据库表结构和 MyBatis 映射，基于 Spring Boot
 
 **子任务**:
 5.1 创建数据库初始化脚本
@@ -193,6 +201,7 @@
    - 创建 `flow_state_history` 表
    - 创建 `storage_file` 表
    - 创建 `plugin_instance` 表
+   - **使用 Flyway 或 Liquibase 管理数据库迁移**
 
 5.2 定义 MyBatis 实体类
    - `FlowSession`
@@ -212,21 +221,24 @@
    - `StorageFileMapper`
    - `PluginInstanceMapper`
 
-5.5 配置 MyBatis
-   - `mybatis-config.xml`
-   - Spring Boot 集成配置
+5.5 配置 MyBatis + Spring Boot
+   - **使用 `mybatis-spring-boot-starter`**
+   - `application.yml` 配置数据源、MyBatis
+   - **使用 `@MapperScan` 扫描 Mapper 接口**
 
 **交付物**:
 - `aidrclaw-core/src/main/resources/db/migration/V1__init.sql`
 - `aidrclaw-core/src/main/java/com/aidrclaw/core/entity/` 实体类
 - `aidrclaw-core/src/main/resources/mappers/` XML 映射文件
 - Mapper 接口
+- **`application.yml` Spring Boot 配置文件**
 
 **验收标准**:
 - [ ] 数据库表正确创建
-- [ ] MyBatis 配置正确
+- [ ] MyBatis + Spring Boot 配置正确
 - [ ] CRUD 操作正常工作
 - [ ] 单元测试覆盖
+- [ ] Flyway/Liquibase 迁移成功执行
 
 ---
 
@@ -320,10 +332,12 @@
 
 **需要研究的领域**:
 1. Java SPI 最佳实践和常见陷阱
-2. Guava EventBus vs Spring Event 选择
-3. MyBatis XML 映射配置最佳实践
-4. Maven 多模块项目依赖管理
-5. PostgreSQL 连接池配置优化
+2. **Spring Boot 3.x 插件化架构最佳实践**
+3. **Spring ApplicationEventPublisher vs Guava EventBus**
+4. MyBatis XML 映射配置最佳实践 (**mybatis-spring-boot-starter**)
+5. Maven 多模块项目依赖管理
+6. PostgreSQL 连接池配置优化 (**HikariCP + Spring Boot**)
+7. **Spring Boot 配置外部化最佳实践**
 
 ---
 
