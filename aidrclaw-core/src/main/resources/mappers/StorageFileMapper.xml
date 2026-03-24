@@ -11,11 +11,20 @@
         <result column="business_type" property="businessType"/>
         <result column="business_id" property="businessId"/>
         <result column="created_at" property="createdAt"/>
+        <result column="storage_backend" property="storageBackend"/>
+        <result column="bucket_name" property="bucketName"/>
+        <result column="encrypted" property="encrypted"/>
+        <result column="encryption_key_id" property="encryptionKeyId"/>
+        <result column="encrypted_iv" property="encryptedIv"/>
+        <result column="compression" property="compression"/>
+        <result column="retention_days" property="retentionDays"/>
+        <result column="archived_at" property="archivedAt"/>
+        <result column="accessed_at" property="accessedAt"/>
     </resultMap>
 
     <insert id="insert" parameterType="com.aidrclaw.core.entity.StorageFile">
-        INSERT INTO storage_file (file_path, file_size, file_hash, mime_type, business_type, business_id, created_at)
-        VALUES (#{filePath}, #{fileSize}, #{fileHash}, #{mimeType}, #{businessType}, #{businessId}, #{createdAt})
+        INSERT INTO storage_file (file_path, file_size, file_hash, mime_type, business_type, business_id, created_at, storage_backend, bucket_name, encrypted, encryption_key_id, encrypted_iv)
+        VALUES (#{filePath}, #{fileSize}, #{fileHash}, #{mimeType}, #{businessType}, #{businessId}, #{createdAt}, #{storageBackend}, #{bucketName}, #{encrypted}, #{encryptionKeyId}, #{encryptedIv})
     </insert>
 
     <select id="selectById" resultMap="StorageFileResult">

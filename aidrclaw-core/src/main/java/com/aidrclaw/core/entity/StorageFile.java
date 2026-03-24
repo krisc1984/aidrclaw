@@ -11,6 +11,16 @@ public class StorageFile {
     private String businessType;
     private String businessId;
     private LocalDateTime createdAt;
+    
+    private String storageBackend;
+    private String bucketName;
+    private Boolean encrypted = false;
+    private String encryptionKeyId;
+    private String encryptedIv;
+    private String compression;
+    private Integer retentionDays;
+    private LocalDateTime archivedAt;
+    private LocalDateTime accessedAt;
 
     public StorageFile() {
     }
@@ -77,5 +87,77 @@ public class StorageFile {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getStorageBackend() {
+        return storageBackend;
+    }
+
+    public void setStorageBackend(String storageBackend) {
+        this.storageBackend = storageBackend;
+    }
+
+    public String getBucketName() {
+        return bucketName;
+    }
+
+    public void setBucketName(String bucketName) {
+        this.bucketName = bucketName;
+    }
+
+    public Boolean getEncrypted() {
+        return encrypted;
+    }
+
+    public void setEncrypted(Boolean encrypted) {
+        this.encrypted = encrypted;
+    }
+
+    public String getEncryptionKeyId() {
+        return encryptionKeyId;
+    }
+
+    public void setEncryptionKeyId(String encryptionKeyId) {
+        this.encryptionKeyId = encryptionKeyId;
+    }
+
+    public String getEncryptedIv() {
+        return encryptedIv;
+    }
+
+    public void setEncryptedIv(String encryptedIv) {
+        this.encryptedIv = encryptedIv;
+    }
+
+    public String getCompression() {
+        return compression;
+    }
+
+    public void setCompression(String compression) {
+        this.compression = compression;
+    }
+
+    public Integer getRetentionDays() {
+        return retentionDays;
+    }
+
+    public void setRetentionDays(Integer retentionDays) {
+        this.retentionDays = retentionDays;
+    }
+
+    public LocalDateTime getArchivedAt() {
+        return archivedAt;
+    }
+
+    public void setArchivedAt(LocalDateTime archivedAt) {
+        this.archivedAt = archivedAt;
+    }
+
+    public LocalDateTime getAccessedAt() {
+        return accessedAt;
+    }
+
+    public void setAccessedAt(LocalDateTime accessedAt) {
+        this.accessedAt = accessedAt;
     }
 }
