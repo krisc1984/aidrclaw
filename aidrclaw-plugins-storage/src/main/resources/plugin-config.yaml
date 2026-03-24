@@ -1,0 +1,3 @@
+storage:
+  local:
+    base-path: ./storage

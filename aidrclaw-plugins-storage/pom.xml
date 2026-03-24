@@ -40,6 +40,12 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- Guava for hashing -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
+
         <!-- 测试依赖 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
