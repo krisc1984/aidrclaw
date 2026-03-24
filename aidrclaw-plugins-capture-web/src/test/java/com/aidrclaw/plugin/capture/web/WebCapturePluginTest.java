@@ -28,10 +28,10 @@ class WebCapturePluginTest {
         plugin = new WebCapturePlugin();
         testUploadDir = Files.createTempDirectory("web-capture-test");
         
-        PluginContext context = new PluginContext();
-        Map<String, String> config = new HashMap<>();
+        Map<String, Object> config = new HashMap<>();
         config.put("upload.directory", testUploadDir.toString());
-        context.setConfig(config);
+        
+        PluginContext context = new PluginContext(config, new HashMap<>());
         
         plugin.init(context);
     }
@@ -45,7 +45,7 @@ class WebCapturePluginTest {
     void testGetMetadata() {
         PluginMetadata metadata = plugin.getMetadata();
         
-        assertEquals("web-capture", metadata.getId());
+        assertEquals("web-capture", metadata.getPluginId());
         assertEquals("1.0.0", metadata.getVersion());
         assertEquals("Web 音视频采集插件", metadata.getName());
         assertNotNull(metadata.getDescription());
@@ -53,17 +53,16 @@ class WebCapturePluginTest {
 
     @Test
     void testExecuteWithValidFile() throws IOException {
-        PluginContext context = new PluginContext();
-        Map<String, Object> parameters = new HashMap<>();
-        
+        Map<String, Object> input = new HashMap<>();
         MockMultipartFile file = new MockMultipartFile(
             "file",
             "test-recording.webm",
             "video/webm",
             "test video content".getBytes()
         );
-        parameters.put("file", file);
-        context.setParameters(parameters);
+        input.put("file", file);
+        
+        PluginContext context = new PluginContext(new HashMap<>(), input);
         
         PluginResult result = plugin.execute(context);
         
@@ -82,27 +81,26 @@ class WebCapturePluginTest {
     @Test
     void testExecuteWithNullFile() {
         PluginContext context = new PluginContext();
-        context.setParameters(new HashMap<>());
         
         PluginResult result = plugin.execute(context);
         
         assertEquals(500, result.getStatusCode());
         assertFalse(result.isSuccess());
-        assertTrue(result.getMessage().contains("未找到上传文件"));
+        assertTrue(result.getErrorMessage().contains("未找到上传文件"));
     }
 
     @Test
     void testExecuteWithEmptyFile() {
-        PluginContext context = new PluginContext();
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("file", new MockMultipartFile("file", new byte[0]));
-        context.setParameters(parameters);
+        Map<String, Object> input = new HashMap<>();
+        input.put("file", new MockMultipartFile("file", new byte[0]));
+        
+        PluginContext context = new PluginContext(new HashMap<>(), input);
         
         PluginResult result = plugin.execute(context);
         
         assertEquals(500, result.getStatusCode());
         assertFalse(result.isSuccess());
-        assertTrue(result.getMessage().contains("未找到上传文件"));
+        assertTrue(result.getErrorMessage().contains("未找到上传文件"));
     }
 
     @Test
