@@ -47,10 +47,12 @@
 
 **Plans**: 3 plans
 
-**Plans**:
-- [x] 02-01-PLAN.md — Web 端 WebRTC 音视频采集插件
-- [x] 02-02-PLAN.md — 移动端 React Native 采集插件
-- [x] 02-03-PLAN.md — 设备管理与质量配置
+**Plans**: 3 plans (2 完成，1 进行中)
+
+**Plan 进度**:
+- [x] 02-01-PLAN.md — Web 端 WebRTC 音视频采集插件 ✅
+- [x] 02-02-PLAN.md — 移动端 React Native 采集插件 ✅
+- [ ] 02-03-PLAN.md — 设备管理与质量配置 (Wave 2)
 
 **成功标准**:
 1. Web 端可通过 WebRTC 采集摄像头和麦克风
