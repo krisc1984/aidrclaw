@@ -2,6 +2,7 @@ package com.aidrclaw.plugin.storage;
 
 import com.aidrclaw.core.mapper.StorageFileMapper;
 import com.aidrclaw.plugin.PluginContext;
+import com.aidrclaw.plugin.PluginMetadata;
 import com.aidrclaw.plugin.PluginResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
