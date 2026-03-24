@@ -43,10 +43,14 @@
 
 **目标**: 实现 Web 和移动端音视频采集能力
 
-**需求映射**:
-- CAPTURE-01: 移动端采集插件（iOS/Android）调用系统摄像头、麦克风，提供音视频流
-- CAPTURE-02: Web 采集插件基于 WebRTC 实现浏览器端采集，无需安装插件
-- CAPTURE-03: 支持动态切换摄像头、麦克风、录制质量参数
+**需求映射**: [CAPTURE-01, CAPTURE-02, CAPTURE-03]
+
+**Plans**: 3 plans
+
+**Plans**:
+- [x] 02-01-PLAN.md — Web 端 WebRTC 音视频采集插件
+- [x] 02-02-PLAN.md — 移动端 React Native 采集插件
+- [x] 02-03-PLAN.md — 设备管理与质量配置
 
 **成功标准**:
 1. Web 端可通过 WebRTC 采集摄像头和麦克风
