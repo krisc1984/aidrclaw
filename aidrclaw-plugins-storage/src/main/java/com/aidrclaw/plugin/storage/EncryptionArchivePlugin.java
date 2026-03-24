@@ -102,7 +102,7 @@ public class EncryptionArchivePlugin implements Plugin {
             storageInput.put("metadata", metadata);
             storageContext.getInput().putAll(storageInput);
 
-            Plugin storagePlugin = pluginManager.getPlugin(storagePluginId);
+            Plugin storagePlugin = pluginManager.getPlugin(storagePluginId).orElse(null);
             if (storagePlugin == null) {
                 return PluginResult.error("存储插件不存在：" + storagePluginId);
             }
@@ -144,7 +144,7 @@ public class EncryptionArchivePlugin implements Plugin {
             storageInput.put("objectKey", fileId);
             storageContext.getInput().putAll(storageInput);
 
-            Plugin storagePlugin = pluginManager.getPlugin(storagePluginId);
+            Plugin storagePlugin = pluginManager.getPlugin(storagePluginId).orElse(null);
             if (storagePlugin == null) {
                 return PluginResult.error("存储插件不存在：" + storagePluginId);
             }
