@@ -39,10 +39,12 @@
 - Spring Boot 主应用类 (`AidrclawApplication.java`)
 
 **验收标准**:
-- [ ] `mvn clean install` 成功执行
-- [ ] 所有子模块正确继承父 POM
-- [ ] Spring Boot 应用可启动 (`mvn spring-boot:run`)
-- [ ] 依赖版本统一管理
+- [x] `mvn clean install` 成功执行
+- [x] 所有子模块正确继承父 POM
+- [x] Spring Boot 应用可启动 (`mvn spring-boot:run`)
+- [x] 依赖版本统一管理
+
+**状态**: ✅ 已完成 (2026-03-24)
 
 ---
 
@@ -88,9 +90,11 @@
 - SPI 配置示例文件
 
 **验收标准**:
-- [ ] 插件接口编译通过
-- [ ] 提供 SPI 配置示例
-- [ ] Javadoc 完整
+- [x] 插件接口编译通过
+- [x] 提供 SPI 配置示例
+- [x] Javadoc 完整
+
+**状态**: ✅ 已完成 (2026-03-24)
 
 ---
 
