@@ -3,8 +3,12 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 export interface UseWebRTCOptions {
   video?: boolean | MediaTrackConstraints;
   audio?: boolean | MediaTrackConstraints;
+  videoDeviceId?: string;
+  audioDeviceId?: string;
+  qualityPreset?: 'sd' | 'hd' | 'fhd';
   onStreamReady?: (stream: MediaStream) => void;
   onStreamError?: (error: Error) => void;
+  onDeviceDisconnected?: () => void;
 }
 
 export interface UseWebRTCReturn {
@@ -19,11 +23,33 @@ export interface UseWebRTCReturn {
 
 export function useWebRTC(options: UseWebRTCOptions = {}): UseWebRTCReturn {
   const {
-    video = { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
+    video,
     audio = true,
+    videoDeviceId,
+    audioDeviceId,
+    qualityPreset = 'hd',
     onStreamReady,
     onStreamError,
+    onDeviceDisconnected,
   } = options;
+
+  const qualityConstraints: Record<string, MediaTrackConstraints> = {
+    sd: { width: { exact: 640 }, height: { exact: 480 }, frameRate: { ideal: 30 } },
+    hd: { width: { exact: 1280 }, height: { exact: 720 }, frameRate: { ideal: 30 } },
+    fhd: { width: { exact: 1920 }, height: { exact: 1080 }, frameRate: { ideal: 30 } },
+  };
+
+  const baseVideoConstraints = typeof video === 'object' ? video : {};
+  const videoConstraints: MediaTrackConstraints = {
+    ...qualityConstraints[qualityPreset],
+    ...baseVideoConstraints,
+    deviceId: videoDeviceId ? { exact: videoDeviceId } : undefined,
+  };
+
+  const audioConstraints: MediaTrackConstraints = {
+    deviceId: audioDeviceId ? { exact: audioDeviceId } : undefined,
+    ...(typeof audio === 'object' ? audio : {}),
+  };
 
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -46,8 +72,8 @@ export function useWebRTC(options: UseWebRTCOptions = {}): UseWebRTCReturn {
 
     try {
       const mediaStream = await navigator.mediaDevices.getUserMedia({
-        video,
-        audio,
+        video: videoConstraints,
+        audio: audioConstraints,
       });
 
       streamRef.current = mediaStream;
@@ -74,7 +100,7 @@ export function useWebRTC(options: UseWebRTCOptions = {}): UseWebRTCReturn {
     } finally {
       setIsRequesting(false);
     }
-  }, [video, audio, onStreamReady, onStreamError]);
+  }, [videoConstraints, audioConstraints, onStreamReady, onStreamError]);
 
   const stopCapture = useCallback(() => {
     stopCurrentStream();
@@ -115,10 +141,19 @@ export function useWebRTC(options: UseWebRTCOptions = {}): UseWebRTCReturn {
   }, [streamRef.current, video, audio, stopCurrentStream, onStreamReady, onStreamError]);
 
   useEffect(() => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => {
+        track.onended = () => {
+          onDeviceDisconnected?.();
+          setError('设备已断开');
+        };
+      });
+    }
+
     return () => {
       stopCurrentStream();
     };
-  }, [stopCurrentStream]);
+  }, [streamRef.current, stopCurrentStream, onDeviceDisconnected]);
 
   return {
     stream,
