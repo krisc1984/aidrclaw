@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: aidrclaw
+  
+  datasource:
+    url: jdbc:postgresql://localhost:5432/aidrclaw
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+  
+  mybatis:
+    mapper-locations: classpath:mappers/*.xml
+    configuration:
+      map-underscore-to-camel-case: true
+      log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+
+server:
+  port: 8080
+
+logging:
+  level:
+    com.aidrclaw: DEBUG
+    org.springframework: INFO
