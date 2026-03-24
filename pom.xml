@@ -27,6 +27,7 @@
         <module>aidrclaw-core</module>
         <module>aidrclaw-plugins-storage</module>
         <module>aidrclaw-plugins-flow</module>
+        <module>aidrclaw-plugins-capture-web</module>
     </modules>
 
     <!-- 属性配置 -->
