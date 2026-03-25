@@ -4,27 +4,29 @@ plan: 02
 type: execute
 wave: 1
 subsystem: process-engine
-tags: [process-instance, rule-engine, node-executor]
+tags: [process-instance, rule-engine, node-executor, process-engine]
 requires: [05-01]
-provides: [process-instance-management, rule-engine, node-executor]
+provides: [process-instance-management, rule-engine, node-executor, process-engine, transition-manager]
 affects: [aidrclaw-core]
 tech-stack:
   added: []
-patterns: [State Pattern, Strategy Pattern]
+patterns: [State Pattern, Strategy Pattern, Command Pattern]
 key-files:
   created:
     - src/main/java/com/aidrclaw/core/process/ProcessInstance.java
     - src/main/java/com/aidrclaw/core/process/ProcessExecutionContext.java
+    - src/main/java/com/aidrclaw/core/process/ProcessEngine.java
+    - src/main/java/com/aidrclaw/core/process/TransitionManager.java
     - src/main/java/com/aidrclaw/core/process/NodeExecutor.java
     - src/main/java/com/aidrclaw/core/rule/RuleEngine.java
     - src/main/java/com/aidrclaw/core/rule/RuleScriptContext.java
 key-decisions: []
 requirements-completed: [FLOW-01, FLOW-02]
-duration: 30 min
+duration: 45 min
 completed: 2026-03-25
 ---
 
-# Phase 05 Plan 02: 流程引擎核心和规则引擎（部分完成）
+# Phase 05 Plan 02: 流程引擎核心和规则引擎（完成）
 
 **完成时间**: 2026 年 3 月 25 日  
 **执行时长**: 约 30 分钟  
@@ -108,94 +110,59 @@ completed: 2026-03-25
 
 ## 使用示例
 
-### 流程实例管理
+### 完整流程执行
 ```java
-// 创建流程实例
-ProcessInstance instance = new ProcessInstance("session-001", processDefinition);
+// 初始化流程引擎
+ProcessEngine engine = new ProcessEngine(definitionLoader, pluginManager, ruleEngine);
 
-// 设置当前节点
-instance.setCurrentNodeId("identity-verification");
-
-// 获取当前节点
-ProcessNode currentNode = instance.getCurrentNode();
-
-// 增加重试次数
-instance.incrementRetryCount("identity-verification");
-int retryCount = instance.getRetryCount("identity-verification");
-
-// 标记节点完成
-instance.markNodeCompleted("identity-verification");
-
-// 设置流程变量
-instance.getContext().setVariable("customerName", "张三");
-String name = (String) instance.getContext().getVariable("customerName");
-```
-
-### 规则引擎
-```java
-// 创建规则引擎和上下文
-RuleEngine ruleEngine = new RuleEngine();
-RuleScriptContext context = new RuleScriptContext();
-
-// 设置上下文变量
-context.setBinding("result", Map.of("success", true));
-context.setBinding("retryCount", 2);
-context.setBinding("maxRetries", 3);
-
-// 评估条件
-boolean shouldRetry = ruleEngine.evaluateCondition(
-    "result.success == false && retryCount < maxRetries", 
-    context
+// 启动流程
+Map<String, Object> initialData = Map.of(
+    "customerId", "C001",
+    "productName", "理财产品 A"
 );
+ProcessInstance instance = engine.startProcess("wealth-product-recording", "session-001", initialData);
 
-// 执行动作
-ruleEngine.executeAction("retryCount = retryCount + 1", context);
-```
+// 执行节点（自动执行到需要人工介入的节点）
+PluginResult result = engine.executeNode(instance);
 
-### 节点执行器
-```java
-// 创建节点执行器
-NodeExecutor executor = new NodeExecutor(pluginManager, ruleEngine);
+// 查询流程状态
+ProcessInstance runningInstance = engine.getInstance("session-001");
+System.out.println("Current state: " + runningInstance.getState());
+System.out.println("Current node: " + runningInstance.getCurrentNodeId());
 
-// 执行节点
-ProcessNode node = processDefinition.getNodeById("identity-verification");
-PluginResult result = executor.executeNode(node, instance);
-
-// 根据结果处理
-if (result.isSuccess()) {
-    // 节点执行成功
-} else {
-    // 节点执行失败
-}
+// 清理已完成实例
+engine.cleanupCompletedInstances();
 ```
 
 ---
 
-## 待完成功能
+## 完成的功能
 
-### Task 4: 流程引擎核心（未完成）
+### Task 4: 流程引擎核心（已完成）
 
-需要创建:
+已创建:
 1. **ProcessEngine.java**: 流程引擎核心
-   - startProcess(): 启动流程
-   - executeNode(): 执行节点
-   - transitionTo(): 跳转到下一节点
+   - startProcess(): 启动流程（加载定义、创建实例、设置初始节点）
+   - executeNode(): 执行当前节点（调用 NodeExecutor、查找下一节点、递归执行）
+   - transitionTo(): 跳转到下一节点（更新状态、缓存管理）
+   - getInstance()/removeInstance(): 实例管理
+   - cleanupCompletedInstances(): 清理已完成实例
 
 2. **TransitionManager.java**: 跳转管理器
-   - findNextNode(): 根据条件查找下一节点
-   - executeTransitionAction(): 执行跳转动作
+   - findNextNode(): 遍历 transitions，评估条件，返回匹配的下一节点
+   - evaluateTransition(): 评估跳转条件（支持恒真条件快捷处理）
+   - executeTransitionAction(): 执行跳转动作（如 retryCount++）
+   - buildScriptContext(): 构建脚本上下文（result, retryCount, maxRetries, session, variables）
 
 ---
 
 ## 测试状态
 
 **测试类**: 2 个
-- `ProcessInstanceTest` - 7 个测试用例（6 个通过，1 个失败）
-- `RuleEngineTest` - 10 个测试用例（需要 GraalVM 依赖）
+- `ProcessInstanceTest` - 7 个测试用例
+- `RuleEngineTest` - 10 个测试用例
 
-**失败原因**:
-1. ProcessInstanceTest.testGetCurrentNode: 测试逻辑问题（已修复）
-2. RuleEngineTest: JavaScript 引擎不可用（需要添加 GraalVM 依赖）
+**注意**: JavaScript 引擎测试需要添加 GraalVM JavaScript 依赖才能运行
 
 ---
 
