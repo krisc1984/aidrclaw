@@ -63,11 +63,12 @@ public class NodeExecutor {
         
         // 构建插件上下文
         PluginContext pluginContext = new PluginContext();
-        pluginContext.setParameters(instance.getContext().getSessionData());
+        // 使用 config 传递会话数据
+        instance.getContext().getSessionData().forEach(pluginContext.getConfig()::put);
         
         // 执行插件
         try {
-            Plugin plugin = pluginManager.getPlugin(pluginId);
+            Plugin plugin = pluginManager.getPlugin(pluginId).orElse(null);
             if (plugin == null) {
                 return PluginResult.error("Plugin not found: " + pluginId);
             }
