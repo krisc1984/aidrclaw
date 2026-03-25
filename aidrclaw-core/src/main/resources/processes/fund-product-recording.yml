@@ -1,0 +1,82 @@
+# 基金产品双录流程配置
+# 流程 ID: fund-product-recording
+# 版本：1.0
+# 描述：基金产品销售双录流程，增加风险承受能力评估环节
+
+processId: fund-product-recording
+name: 基金产品双录流程
+version: "1.0"
+description: 基金产品销售双录流程，包含身份核验、风险承受能力评估、风险揭示、产品介绍、确认签字等环节
+
+nodes:
+  # 节点 1: 身份核验
+  - nodeId: identity-verification
+    name: 身份核验
+    nodeType: AI_NODE
+    plugin: face-plugin
+    timeout: 300
+    maxRetries: 3
+    retryDelay: 1000
+    transitions:
+      - condition: "result.success == true"
+        next: risk-assessment
+      - condition: "result.success == false && retryCount < maxRetries"
+        next: identity-verification
+      - condition: "result.success == false && retryCount >= maxRetries"
+        next: manual-review
+
+  # 节点 2: 风险承受能力评估（基金特有）
+  - nodeId: risk-assessment
+    name: 风险承受能力评估
+    nodeType: AI_NODE
+    plugin: risk-eval-plugin
+    timeout: 600
+    maxRetries: 2
+    retryDelay: 500
+    transitions:
+      - condition: "result.riskLevel != null"
+        next: risk-disclosure
+      - condition: "result.success == false"
+        next: manual-review
+
+  # 节点 3: 风险揭示
+  - nodeId: risk-disclosure
+    name: 风险揭示
+    nodeType: AGENT_NODE
+    script: fund-risk-script-001
+    timeout: 600
+    transitions:
+      - condition: "true"
+        next: product-introduction
+
+  # 节点 4: 产品介绍
+  - nodeId: product-introduction
+    name: 产品介绍
+    nodeType: AGENT_NODE
+    script: fund-product-script-001
+    timeout: 900
+    transitions:
+      - condition: "true"
+        next: confirmation
+
+  # 节点 5: 确认签字
+  - nodeId: confirmation
+    name: 确认签字
+    nodeType: MANUAL_NODE
+    timeout: 300
+    transitions:
+      - condition: "true"
+        next: complete
+
+  # 节点 6: 人工复核（异常路径）
+  - nodeId: manual-review
+    name: 人工复核
+    nodeType: MANUAL_NODE
+    transitions:
+      - condition: "true"
+        next: complete
+
+  # 节点 7: 流程完成
+  - nodeId: complete
+    name: 完成
+    nodeType: END_NODE

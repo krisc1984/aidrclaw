@@ -1,0 +1,68 @@
+# 理财产品双录流程配置
+# 流程 ID: wealth-product-recording
+# 版本：1.0
+# 描述：标准理财产品销售双录流程
+
+processId: wealth-product-recording
+name: 理财产品双录流程
+version: "1.0"
+description: 标准理财产品销售双录流程，包含身份核验、风险揭示、产品介绍、确认签字等环节
+
+nodes:
+  # 节点 1: 身份核验
+  - nodeId: identity-verification
+    name: 身份核验
+    nodeType: AI_NODE
+    plugin: face-plugin
+    timeout: 300
+    maxRetries: 3
+    retryDelay: 1000
+    transitions:
+      - condition: "result.success == true"
+        next: risk-disclosure
+      - condition: "result.success == false && retryCount < maxRetries"
+        next: identity-verification
+      - condition: "result.success == false && retryCount >= maxRetries"
+        next: manual-review
+
+  # 节点 2: 风险揭示
+  - nodeId: risk-disclosure
+    name: 风险揭示
+    nodeType: AGENT_NODE
+    script: risk-script-001
+    timeout: 600
+    transitions:
+      - condition: "true"
+        next: product-introduction
+
+  # 节点 3: 产品介绍
+  - nodeId: product-introduction
+    name: 产品介绍
+    nodeType: AGENT_NODE
+    script: product-script-001
+    timeout: 900
+    transitions:
+      - condition: "true"
+        next: confirmation
+
+  # 节点 4: 确认签字
+  - nodeId: confirmation
+    name: 确认签字
+    nodeType: MANUAL_NODE
+    timeout: 300
+    transitions:
+      - condition: "true"
+        next: complete
+
+  # 节点 5: 人工复核（异常路径）
+  - nodeId: manual-review
+    name: 人工复核
+    nodeType: MANUAL_NODE
+    transitions:
+      - condition: "true"
+        next: complete
+
+  # 节点 6: 流程完成
+  - nodeId: complete
+    name: 完成
+    nodeType: END_NODE
